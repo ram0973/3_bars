@@ -20,8 +20,7 @@ def get_smallest_bar(data) -> dict:
 def get_closest_bar(data, longitude, latitude) -> dict:
     return min(data, key=lambda el: math.sqrt(
         (el['Cells']['geoData']['coordinates'][0] - longitude)**2 +
-        (el['Cells']['geoData']['coordinates'][1] - latitude)**2)
-    )
+        (el['Cells']['geoData']['coordinates'][1] - latitude)**2))
 
 
 if __name__ == '__main__':
