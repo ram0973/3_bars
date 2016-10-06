@@ -5,6 +5,7 @@ import math
 
 JSON_FILE = 'Бары.json'
 
+
 def load_data(filepath) -> list:
     with open(filepath, mode='r', encoding="utf-8") as file:
         return json.load(file)
