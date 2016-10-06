@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import argparse
 import json
-from os.path import isfile
+import os
 from sys import platform
 import math
 import sys
@@ -39,8 +39,12 @@ def get_closest_bar(data, longitude: float, latitude: float):
 if __name__ == '__main__':
 
     file_path = get_named_argument('json')
-    if isfile(file_path):
-        data = load_data(file_path)
+    if os.path.isfile(file_path):
+        try:
+            data = load_data(file_path)
+        except PermissionError:
+            print('У вас нет прав доступа к файлу')
+            exit(1)
     else:
         print('Файл не найден')
         exit(1)
