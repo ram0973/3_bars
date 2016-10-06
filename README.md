@@ -7,3 +7,27 @@
 самый большой бар;
 самый маленький бар;
 самый близкий бар (текущие gps-координаты ввести с клавиатуры).
+
+'''
+Json file item example
+{
+    "Id":"ae3e9479-070f-4d66-9429-de3acd8427ac",
+    "Number":1,
+    "Cells":{
+        "global_id":20660594,
+        "Name":"Юнион Джек",
+        "IsNetObject":"нет",
+        "OperatingCompany":null,
+        "AdmArea":"Центральный административный округ",
+        "District":"Мещанский район",
+        "Address":"Нижний Кисельный переулок, дом 3, строение 1",
+        "PublicPhone":[{"PublicPhone":"(495) 621-19-63"}],
+        "SeatsCount":30,
+        "SocialPrivileges":"нет",
+        "geoData":{
+            "type":"Point",
+            "coordinates":[37.621587946152012,55.765366956608361]
+        }
+    }
+},
+'''
