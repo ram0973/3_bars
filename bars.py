@@ -2,9 +2,14 @@
 import argparse
 import json
 import os
-from sys import platform
 import math
 import sys
+
+
+def load_win_unicode_console():
+    if sys.platform == 'win32':
+        import win_unicode_console
+        win_unicode_console.enable()
 
 
 def get_named_argument(arg_name: str) -> str:
@@ -52,9 +57,7 @@ if __name__ == '__main__':
     latitude = float(input('Введите широту вашего местоположения: '))
     longitude = float(input('Введите долготу вашего местоположения: '))
 
-    if platform == 'win32':
-        import win_unicode_console
-        win_unicode_console.enable()
+    load_win_unicode_console()
 
     print('Бар с мин. кол-вом мест:\n', get_smallest_bar(data), '\n')
     print('Бар с макс. кол-вом мест:\n', get_biggest_bar(data), '\n')
