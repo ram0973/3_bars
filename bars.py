@@ -23,8 +23,16 @@ def get_named_argument(arg_name: str) -> str:
 
 
 def load_data(filepath: str):
-    with open(filepath, mode='r', encoding="utf-8") as file:
-        return json.load(file)
+    if os.path.isfile(file_path):
+        try:
+            with open(filepath, mode='r', encoding="utf-8") as file:
+                return json.load(file)
+        except PermissionError:
+            print('У вас нет прав доступа к файлу')
+            exit(1)
+    else:
+        print('Файл не найден')
+        exit(1)
 
 
 def get_biggest_bar(data):
@@ -44,22 +52,15 @@ def get_closest_bar(data, longitude: float, latitude: float):
 if __name__ == '__main__':
 
     file_path = get_named_argument('json')
-    if os.path.isfile(file_path):
-        try:
-            data = load_data(file_path)
-        except PermissionError:
-            print('У вас нет прав доступа к файлу')
-            exit(1)
-    else:
-        print('Файл не найден')
-        exit(1)
+
+    data = load_data(file_path)
 
     latitude = float(input('Введите широту вашего местоположения: '))
     longitude = float(input('Введите долготу вашего местоположения: '))
 
     load_win_unicode_console()
 
-    print('Бар с мин. кол-вом мест:\n', get_smallest_bar(data), '\n')
+    print('\nБар с мин. кол-вом мест:\n', get_smallest_bar(data), '\n')
     print('Бар с макс. кол-вом мест:\n', get_biggest_bar(data), '\n')
     print('Самый близкий бар:\n', get_closest_bar(data, longitude, latitude),
           '\n')
