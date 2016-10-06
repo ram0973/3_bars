@@ -23,7 +23,7 @@ def get_named_argument(arg_name: str) -> str:
 
 
 def load_data(filepath: str):
-    if os.path.isfile(file_path):
+    if os.path.isfile(filepath):
         try:
             with open(filepath, mode='r', encoding="utf-8") as file:
                 return json.load(file)
