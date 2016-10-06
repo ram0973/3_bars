@@ -3,6 +3,7 @@ import json
 from sys import platform
 import math
 
+JSON_FILE = 'Бары.json'
 
 def load_data(filepath) -> list:
     with open(filepath, mode='r', encoding="utf-8") as file:
@@ -27,7 +28,7 @@ if __name__ == '__main__':
     latitude = float(input('Введите широту вашего местоположения:'))
     longitude = float(input('Введите долготу вашего местоположения:'))
 
-    data = load_data('Бары.json')
+    data = load_data(JSON_FILE)
 
     if platform == 'win32':
         import win_unicode_console
