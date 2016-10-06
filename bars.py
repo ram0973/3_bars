@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import json
-import win_unicode_console
+from sys import platform
 import math
 
 
@@ -29,7 +29,9 @@ if __name__ == '__main__':
 
     data = load_data('Бары.json')
 
-    win_unicode_console.enable()
+    if platform == 'win32':
+        import win_unicode_console
+        win_unicode_console.enable()
 
     print('Бар с мин. кол-вом мест:\n', get_smallest_bar(data), '\n')
     print('Бар с макс. кол-вом мест:\n', get_biggest_bar(data), '\n')
