@@ -38,7 +38,10 @@
 ]
 ```
 
-## Версия Python : 3.5
+## Требования
+Python 3.5
+Внешний модуль requests
+Внешний модуль win-unicode-console
 
 ## Установка
     
@@ -46,11 +49,14 @@
     cd 3_bars
     pip install -r requirements.txt
     
-## Использование
+## Настройки
 
-Изменить URL файла c данными о барах, если нужно, в файле bars.py:  
-JSON_URL = 'http://data.mos.ru/opendata/export/1796/json/2/1'
-Запустить: python bars.py 
+Если нужно, изменить константу JSON_URL, в которой хранится URL файла с данными о 
+барах, в файле bars.py
+
+## Запуск
+
+python bars.py 
     
 ## Лицензия
 
