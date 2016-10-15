@@ -1,4 +1,4 @@
-# Решение задачи №3 с сайта devman.org
+# Решение задачи №3 с сайта [devman.org](http://devman.org)
 
 ## Условие задачи:
 
@@ -41,12 +41,14 @@
 ## Версия Python : 3.5
 
 ## Установка
-
+    
+    git clone https://github.com/ram0973/3_bars.git
+    cd 3_bars
     pip install -r requirements.txt
     
 ## Использование
 
-Изменить путь к файлу, если нужно, в файле bars.py:  
+Изменить URL файла c данными о барах, если нужно, в файле bars.py:  
 JSON_URL = 'http://data.mos.ru/opendata/export/1796/json/2/1'
 Запустить: python bars.py 
     
