@@ -1,2 +1,2 @@
-pep8==1.7.0
+requests==2.11.1
 win-unicode-console==0.5
