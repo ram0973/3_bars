@@ -3,7 +3,7 @@ import json
 import math
 import zipfile
 import requests
-from snippets import load_win_unicode_console, get_pretty_printed_json
+import sys
 
 JSON_URL = 'http://data.mos.ru/opendata/export/1796/json/2/1'
 ZIPPED_BARS_FILE = 'bars.zip'  # это же имя прописать в gitignore
@@ -39,6 +39,12 @@ def get_closest_bar(json_bars: list, longitude: float, latitude: float):
     return min(json_bars, key=lambda el: math.sqrt(
         (el['Cells']['geoData']['coordinates'][0] - longitude)**2 +
         (el['Cells']['geoData']['coordinates'][1] - latitude)**2))
+
+
+def load_win_unicode_console():
+    if sys.platform == 'win32':
+        import win_unicode_console
+        win_unicode_console.enable()
 
 
 if __name__ == '__main__':
