@@ -39,15 +39,20 @@
 ```
 
 ## Требования
+
+```
 Python 3.5
 Внешний модуль requests
 Внешний модуль win-unicode-console
+```
 
 ## Установка
-    
-    git clone https://github.com/ram0973/3_bars.git
-    cd 3_bars
-    pip install -r requirements.txt
+
+```    
+git clone https://github.com/ram0973/3_bars.git
+cd 3_bars
+pip install -r requirements.txt
+```
     
 ## Настройки
 
