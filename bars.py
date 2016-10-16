@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import json
 import math
+import os
 import zipfile
 import requests
 import sys
@@ -25,6 +26,7 @@ def print_bar_info(json_bar):
     print('Телефон: ', json_bar['Cells']['PublicPhone'][0]['PublicPhone'])
     print('Количество мест: ', json_bar['Cells']['SeatsCount'])
     print('Координаты: ', json_bar['Cells']['geoData']['coordinates'])
+    print('Расстояние: ', '!!!')
 
 
 def get_biggest_bar(json_bars: list):
@@ -51,6 +53,7 @@ if __name__ == '__main__':
 
     print('Загружаем информацию о барах...\n')
     json_bars_list = load_zipped_json_bars_file_from_url(JSON_URL)
+    os.remove(ZIPPED_BARS_FILE)  # удаляем файл, чтобы не попал в git
 
     user_latitude = float(input('Введите широту вашего местоположения: '))
     user_longitude = float(input('Введите долготу вашего местоположения: '))
