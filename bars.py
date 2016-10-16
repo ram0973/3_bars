@@ -137,8 +137,7 @@ if __name__ == '__main__':
     try:
         json_bars_list = load_zipped_json_bars_file_from_url(JSON_FILE_URL)
     except OSError as error:
-        print('Ошибка: %s в файле: %s' %
-               (error.strerror, error.filename))
+        print('Ошибка: %s в файле: %s' % (error.strerror, error.filename))
         exit(1)
 
     os.remove(ZIPPED_BARS_FILE)  # прибираем мусор
