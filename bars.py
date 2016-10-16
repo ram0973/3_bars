@@ -20,17 +20,13 @@ def load_zipped_json_bars_file_from_url(url: str) -> list:
     """
     response = requests.get(url)
     response.raise_for_status()  # проверяем статус ответа
-    try:
-        with open(ZIPPED_BARS_FILE, 'wb') as zipped_json_bars_file:
-            zipped_json_bars_file.write(response.content)
-        with zipfile.ZipFile(ZIPPED_BARS_FILE) as zipped_json_bars_file:
-            with zipped_json_bars_file.open(
-                    zipped_json_bars_file.namelist()[0]) as json_bars_file:
-                    return json.loads(json_bars_file.read().decode('utf-8'))
-    except OSError as error:
-        print(Fore.RED+Style.BRIGHT, 'Ошибка: ', error.strerror, ' в файле: ',
-              error.filename)
-        exit(1)
+
+    with open(ZIPPED_BARS_FILE, 'wb') as zipped_json_bars_file:
+        zipped_json_bars_file.write(response.content)
+    with zipfile.ZipFile(ZIPPED_BARS_FILE) as zipped_json_bars_file:
+        with zipped_json_bars_file.open(
+                zipped_json_bars_file.namelist()[0]) as json_bars_file:
+                return json.loads(json_bars_file.read().decode('utf-8'))
 
 
 def print_bar_info(json_bar, latitude, longitude):
@@ -146,7 +142,13 @@ def load_win_unicode_console():
 if __name__ == '__main__':
 
     print('Загружаем информацию о барах...\n')
-    json_bars_list = load_zipped_json_bars_file_from_url(JSON_FILE_URL)
+    try:
+        json_bars_list = load_zipped_json_bars_file_from_url(JSON_FILE_URL)
+    except OSError as error:
+        print(Fore.RED+Style.BRIGHT, 'Ошибка: ', error.strerror, ' в файле: ',
+              error.filename)
+        exit(1)
+
     os.remove(ZIPPED_BARS_FILE)  # прибираем мусор
 
     try:
