@@ -33,7 +33,8 @@ def print_bar_info(json_bar, latitude: float, longitude: float):
     print('Адрес: ', json_bar['Cells']['Address'])
     print('Телефон: ', json_bar['Cells']['PublicPhone'][0]['PublicPhone'])
     print('Количество мест: ', json_bar['Cells']['SeatsCount'])
-    print('Координаты: ', json_bar['Cells']['geoData']['coordinates'])
+    print('Широта: ', json_bar['Cells']['geoData']['coordinates'][1])
+    print('Долгота: ', json_bar['Cells']['geoData']['coordinates'][0])
     # координаты перепутаны местами в самом файле
     print(
         'Расстояние, м: %i' % round(
