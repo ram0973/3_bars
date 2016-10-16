@@ -5,7 +5,6 @@ import os
 import zipfile
 import requests
 import sys
-from colorama import Style, Fore
 
 
 JSON_FILE_URL = 'http://data.mos.ru/opendata/export/1796/json/2/1'
@@ -33,22 +32,18 @@ def print_bar_info(json_bar, latitude: float, longitude: float):
     print('Название: ', json_bar['Cells']['Name'])
     print('Адрес: ', json_bar['Cells']['Address'])
     print('Телефон: ', json_bar['Cells']['PublicPhone'][0]['PublicPhone'])
-    print('Количество мест: ', Fore.GREEN+Style.BRIGHT,
-          json_bar['Cells']['SeatsCount'], Style.RESET_ALL)
+    print('Количество мест: ', json_bar['Cells']['SeatsCount'])
     print('Координаты: ', json_bar['Cells']['geoData']['coordinates'])
     # координаты перепутаны местами в самом файле
     print(
-        'Расстояние, м: ',
-        Fore.GREEN+Style.BRIGHT,
-        round(
+        'Расстояние, м: %i' % round(
             calc_distance_between_two_coordinates(
                 latitude,
                 longitude,
                 float(json_bar['Cells']['geoData']['coordinates'][1]),
                 float(json_bar['Cells']['geoData']['coordinates'][0])
             )
-        ),
-        Style.RESET_ALL
+        )
     )
 
 
@@ -130,13 +125,10 @@ def get_closest_bar(json_bars: list, latitude: float, longitude: float):
 def load_win_unicode_console():
     """
     Включаем правильное отображение unicode в консоли под MS Windows
-    и раскрашивание символов
     """
     if sys.platform == 'win32':
         import win_unicode_console
         win_unicode_console.enable()
-        from colorama import init
-        init()  # colorama
 
 
 if __name__ == '__main__':
@@ -145,8 +137,8 @@ if __name__ == '__main__':
     try:
         json_bars_list = load_zipped_json_bars_file_from_url(JSON_FILE_URL)
     except OSError as error:
-        print(Fore.RED+Style.BRIGHT, 'Ошибка: %s в файле: %s' %
-              error.strerror, error.filename)
+        print('Ошибка: %s в файле: %s' %
+               (error.strerror, error.filename))
         exit(1)
 
     os.remove(ZIPPED_BARS_FILE)  # прибираем мусор
@@ -167,12 +159,9 @@ if __name__ == '__main__':
                                   user_latitude)
 
     load_win_unicode_console()
-    print('\n%sБар с мин. кол-вом мест:%s' % (
-          Fore.GREEN+Style.BRIGHT, Style.RESET_ALL))
+    print('\nБар с мин. кол-вом мест:')
     print_bar_info(smallest_bar, user_latitude, user_longitude)
-    print('\n%sБар с макс. кол-вом мест:%s' % (
-          Fore.GREEN+Style.BRIGHT, Style.RESET_ALL))
+    print('\nБар с макс. кол-вом мест:')
     print_bar_info(biggest_bar, user_latitude, user_longitude)
-    print('\n%sСамый близкий бар:%s' % (
-          Fore.GREEN+Style.BRIGHT, Style.RESET_ALL))
+    print('\nСамый близкий бар:')
     print_bar_info(closest_bar, user_latitude, user_longitude)
