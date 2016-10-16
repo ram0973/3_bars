@@ -92,7 +92,10 @@ python3 bars.py
 
 ## Тесты
 
-python tests.py
+```
+Windows: python tests.py
+Linux: python3 tests.py
+```
     
 ## Лицензия
 
