@@ -52,11 +52,21 @@ Python 3.5.2+
 
 ## Установка
 
+Windows
+
 ```    
 git clone https://github.com/ram0973/3_bars.git
 cd 3_bars
 pip install -r requirements.txt
 ```
+
+Linux
+```    
+git clone https://github.com/ram0973/3_bars.git
+cd 3_bars
+pip3 install -r requirements.txt
+```
+    
     
 ## Описание работы
 Пользователь вводит свои координаты с клавиатуры. Скрипт загружает 
@@ -73,7 +83,13 @@ URL файла с данными о барах, в файле bars.py
 
 ## Запуск
 
-python bars.py 
+Windows
+
+python bars.py
+ 
+Linux
+ 
+python3 bars.py 
 
 ## Тесты
 
