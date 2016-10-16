@@ -5,7 +5,7 @@ import os
 import zipfile
 import requests
 import sys
-from colorama import Style
+from colorama import Style, Fore
 
 
 JSON_FILE_URL = 'http://data.mos.ru/opendata/export/1796/json/2/1'
@@ -28,7 +28,8 @@ def load_zipped_json_bars_file_from_url(url: str) -> list:
                     zipped_json_bars_file.namelist()[0]) as json_bars_file:
                     return json.loads(json_bars_file.read().decode('utf-8'))
     except OSError as error:
-        print('Ошибка: ', error.strerror, ' в файле: ', error.filename)
+        print(Fore.RED+Style.BRIGHT, 'Ошибка: ', error.strerror, ' в файле: ',
+              error.filename)
         exit(1)
 
 
@@ -36,16 +37,23 @@ def print_bar_info(json_bar, latitude, longitude):
     print('Название: ', json_bar['Cells']['Name'])
     print('Адрес: ', json_bar['Cells']['Address'])
     print('Телефон: ', json_bar['Cells']['PublicPhone'][0]['PublicPhone'])
-    print('Количество мест: ', Style.BRIGHT, json_bar['Cells']['SeatsCount'],
-          Style.RESET_ALL)
+    print('Количество мест: ', Fore.GREEN+Style.BRIGHT,
+          json_bar['Cells']['SeatsCount'], Style.RESET_ALL)
     print('Координаты: ', json_bar['Cells']['geoData']['coordinates'])
     # координаты перепутаны местами в самом файле
-    print('Расстояние, м: ', round(calc_distance_between_two_coordinates(
-        latitude,
-        longitude,
-        float(json_bar['Cells']['geoData']['coordinates'][1]),
-        float(json_bar['Cells']['geoData']['coordinates'][0])
-    )))
+    print(
+        'Расстояние, м: ',
+        Fore.GREEN+Style.BRIGHT,
+        round(
+            calc_distance_between_two_coordinates(
+                latitude,
+                longitude,
+                float(json_bar['Cells']['geoData']['coordinates'][1]),
+                float(json_bar['Cells']['geoData']['coordinates'][0])
+            )
+        ),
+        Style.RESET_ALL
+    )
 
 
 def calc_distance_between_two_coordinates(llat1: float,
@@ -157,9 +165,12 @@ if __name__ == '__main__':
                                   user_latitude)
 
     load_win_unicode_console()
-    print('\n' + Style.BRIGHT + 'Бар с мин. кол-вом мест:' + Style.RESET_ALL)
+    print('\n' + Fore.GREEN+Style.BRIGHT + 'Бар с мин. кол-вом мест:' +
+          Style.RESET_ALL)
     print_bar_info(smallest_bar, user_latitude, user_longitude)
-    print('\n' + Style.BRIGHT + 'Бар с макс. кол-вом мест:' + Style.RESET_ALL)
+    print('\n' + Fore.GREEN+Style.BRIGHT + 'Бар с макс. кол-вом мест:' +
+          Style.RESET_ALL)
     print_bar_info(biggest_bar, user_latitude, user_longitude)
-    print('\n' + Style.BRIGHT + 'Самый близкий бар:' + Style.RESET_ALL)
+    print('\n' + Fore.GREEN+Style.BRIGHT + 'Самый близкий бар:' +
+          Style.RESET_ALL)
     print_bar_info(closest_bar, user_latitude, user_longitude)
