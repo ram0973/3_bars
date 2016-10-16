@@ -167,12 +167,12 @@ if __name__ == '__main__':
                                   user_latitude)
 
     load_win_unicode_console()
-    print('\n' + Fore.GREEN+Style.BRIGHT + 'Бар с мин. кол-вом мест:' +
-          Style.RESET_ALL)
+    print('\n%sБар с мин. кол-вом мест:%s' % (
+          Fore.GREEN+Style.BRIGHT, Style.RESET_ALL))
     print_bar_info(smallest_bar, user_latitude, user_longitude)
-    print('\n' + Fore.GREEN+Style.BRIGHT + 'Бар с макс. кол-вом мест:' +
-          Style.RESET_ALL)
+    print('\n%sБар с макс. кол-вом мест:%s' % (
+          Fore.GREEN+Style.BRIGHT, Style.RESET_ALL))
     print_bar_info(biggest_bar, user_latitude, user_longitude)
-    print('\n' + Fore.GREEN+Style.BRIGHT + 'Самый близкий бар:' +
-          Style.RESET_ALL)
+    print('\n%sСамый близкий бар:%s' % (
+          Fore.GREEN+Style.BRIGHT, Style.RESET_ALL))
     print_bar_info(closest_bar, user_latitude, user_longitude)
