@@ -8,7 +8,7 @@ import sys
 from colorama import Style
 
 
-JSON_URL = 'http://data.mos.ru/opendata/export/1796/json/2/1'
+JSON_FILE_URL = 'http://data.mos.ru/opendata/export/1796/json/2/1'
 ZIPPED_BARS_FILE = 'bars.zip'
 # имя файла, в который загружаются данные.
 # после обработки этот файл удаляется и на всякий случай он в .gitignore
@@ -18,7 +18,7 @@ def load_zipped_json_bars_file_from_url(url: str) -> list:
     """
     Загружаем данные о барах из
     """
-    response = requests.get(url, stream=True)
+    response = requests.get(url)
     with open(ZIPPED_BARS_FILE, 'wb') as zipped_json_bars_file:
         zipped_json_bars_file.write(response.content)
     with zipfile.ZipFile(ZIPPED_BARS_FILE) as zipped_json_bars_file:
@@ -58,10 +58,10 @@ def calc_distance_between_two_coordinates(llat1: float,
     rad = 6372795  # радиус сферы (Земли)
 
     # в радианах
-    lat1 = llat1*math.pi/180.
-    lat2 = llat2*math.pi/180.
-    long1 = llong1*math.pi/180.
-    long2 = llong2*math.pi/180.
+    lat1 = llat1 * math.pi / 180.
+    lat2 = llat2 * math.pi / 180.
+    long1 = llong1 * math.pi / 180.
+    long2 = llong2 * math.pi / 180.
 
     # косинусы и синусы широт и разницы долгот
     cl1 = math.cos(lat1)
@@ -73,10 +73,11 @@ def calc_distance_between_two_coordinates(llat1: float,
     sdelta = math.sin(delta)
 
     # вычисления длины большого круга
-    y = math.sqrt(math.pow(cl2*sdelta,2)+math.pow(cl1*sl2-sl1*cl2*cdelta,2))
-    x = sl1*sl2+cl1*cl2*cdelta
-    ad = math.atan2(y,x)
-    dist = ad*rad
+    y = math.sqrt(math.pow(cl2 * sdelta, 2) +
+                  math.pow(cl1 * sl2 - sl1 * cl2 * cdelta, 2))
+    x = sl1 * sl2+cl1*cl2*cdelta
+    ad = math.atan2(y, x)
+    dist = ad * rad
 
     return round(dist)
 
@@ -97,7 +98,7 @@ def get_smallest_bar(json_bars: list):
     return min(json_bars, key=lambda el: el['Cells']['SeatsCount'])
 
 
-def get_closest_bar(json_bars: list, latitude: float, longitude: float) -> int:
+def get_closest_bar(json_bars: list, latitude: float, longitude: float):
     """
     :param json_bars: список баров
     :param latitude: широта пользователя
@@ -118,19 +119,19 @@ def get_closest_bar(json_bars: list, latitude: float, longitude: float) -> int:
 def load_win_unicode_console():
     """
     Включаем правильное отображение unicode в консоли под MS Windows
-    и раскрашивание
+    и раскрашивание символов
     """
     if sys.platform == 'win32':
         import win_unicode_console
         win_unicode_console.enable()
         from colorama import init
-        init()  # colorama
+        #init()  # colorama
 
 
 if __name__ == '__main__':
 
     print('Загружаем информацию о барах...\n')
-    json_bars_list = load_zipped_json_bars_file_from_url(JSON_URL)
+    json_bars_list = load_zipped_json_bars_file_from_url(JSON_FILE_URL)
     os.remove(ZIPPED_BARS_FILE)  # прибираем мусор
 
     try:
