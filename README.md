@@ -1,5 +1,4 @@
-# Решение задачи [№3](https://devman.org/challenges/3/) с сайта 
-[devman.org](https://devman.org)
+# Решение задачи [№3](https://devman.org/challenges/3/) с сайта [devman.org](https://devman.org)
 
 ## Условие задачи:
 
