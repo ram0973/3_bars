@@ -19,20 +19,27 @@ def load_zipped_json_bars_file_from_url(url: str) -> list:
     Загружаем данные о барах из
     """
     response = requests.get(url)
-    with open(ZIPPED_BARS_FILE, 'wb') as zipped_json_bars_file:
-        zipped_json_bars_file.write(response.content)
-    with zipfile.ZipFile(ZIPPED_BARS_FILE) as zipped_json_bars_file:
-        with zipped_json_bars_file.open(zipped_json_bars_file.namelist()[0]) \
-                as json_bars_file:
-            return json.loads(json_bars_file.read().decode('utf-8'))
+    response.raise_for_status()  # проверяем статус ответа
+    try:
+        with open(ZIPPED_BARS_FILE, 'wb') as zipped_json_bars_file:
+            zipped_json_bars_file.write(response.content)
+        with zipfile.ZipFile(ZIPPED_BARS_FILE) as zipped_json_bars_file:
+            with zipped_json_bars_file.open(
+                    zipped_json_bars_file.namelist()[0]) as json_bars_file:
+                    return json.loads(json_bars_file.read().decode('utf-8'))
+    except OSError as error:
+        print('Ошибка: ', error.strerror, ' в файле: ', error.filename)
+        exit(1)
 
 
 def print_bar_info(json_bar, latitude, longitude):
     print('Название: ', json_bar['Cells']['Name'])
     print('Адрес: ', json_bar['Cells']['Address'])
     print('Телефон: ', json_bar['Cells']['PublicPhone'][0]['PublicPhone'])
-    print('Количество мест: ', json_bar['Cells']['SeatsCount'])
+    print('Количество мест: ', Style.BRIGHT, json_bar['Cells']['SeatsCount'],
+          Style.RESET_ALL)
     print('Координаты: ', json_bar['Cells']['geoData']['coordinates'])
+    # координаты перепутаны местами в самом файле
     print('Расстояние, м: ', round(calc_distance_between_two_coordinates(
         latitude,
         longitude,
@@ -125,7 +132,7 @@ def load_win_unicode_console():
         import win_unicode_console
         win_unicode_console.enable()
         from colorama import init
-        #init()  # colorama
+        init()  # colorama
 
 
 if __name__ == '__main__':
