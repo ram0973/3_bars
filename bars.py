@@ -16,7 +16,7 @@ ZIPPED_BARS_FILE = 'bars.zip'
 
 def load_zipped_json_bars_file_from_url(url: str) -> list:
     """
-    Загружаем данные о барах из
+    Загружаем данные о барах из url
     """
     response = requests.get(url)
     response.raise_for_status()  # проверяем статус ответа
@@ -29,7 +29,7 @@ def load_zipped_json_bars_file_from_url(url: str) -> list:
                 return json.loads(json_bars_file.read().decode('utf-8'))
 
 
-def print_bar_info(json_bar, latitude, longitude):
+def print_bar_info(json_bar, latitude: float, longitude: float):
     print('Название: ', json_bar['Cells']['Name'])
     print('Адрес: ', json_bar['Cells']['Address'])
     print('Телефон: ', json_bar['Cells']['PublicPhone'][0]['PublicPhone'])
@@ -145,8 +145,8 @@ if __name__ == '__main__':
     try:
         json_bars_list = load_zipped_json_bars_file_from_url(JSON_FILE_URL)
     except OSError as error:
-        print(Fore.RED+Style.BRIGHT, 'Ошибка: ', error.strerror, ' в файле: ',
-              error.filename)
+        print(Fore.RED+Style.BRIGHT, 'Ошибка: %s в файле: %s' %
+              error.strerror, error.filename)
         exit(1)
 
     os.remove(ZIPPED_BARS_FILE)  # прибираем мусор
