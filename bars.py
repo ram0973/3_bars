@@ -141,7 +141,8 @@ if __name__ == '__main__':
         print('Ошибка: %s в файле: %s' % (error.strerror, error.filename))
         exit(1)
 
-    os.remove(ZIPPED_BARS_FILE)  # прибираем мусор
+    with suppress(OSError):
+        os.remove(ZIPPED_BARS_FILE)  # прибираем мусор
 
     try:
         user_latitude = float(
