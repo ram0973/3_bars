@@ -1,35 +1,47 @@
 # -*- coding: utf-8 -*-
-from contextlib import suppress
 import json
 import math
-import os
-import zipfile
+import io
 import requests
 import sys
-
+from zipfile import ZipFile, BadZipfile
+from requests import ConnectionError, HTTPError, Timeout, TooManyRedirects
 
 JSON_FILE_URL = 'http://data.mos.ru/opendata/export/1796/json/2/1'
-ZIPPED_BARS_FILE = 'bars.zip'
-# имя файла, в который загружаются данные.
-# после обработки этот файл удаляется и на всякий случай он в .gitignore
+REQUEST_TIMEOUT = 9  # ожидаем ответ сервера 9 секунд, для плохих соединений
 
 
-def load_zipped_json_bars_file_from_url(url: str) -> list:
+def download_zipped_json_bars_from(url: str) -> bytes:
     """
-    Загружаем данные о барах из url
+    Загружаем данные по барам с сервера
+    :param url: адрес zip-архива с данными по барам
+    :return: данные по барам полученные с сервера в виде байтов
     """
-    response = requests.get(url)
-    response.raise_for_status()  # проверяем статус ответа
+    response = requests.get(url, timeout=REQUEST_TIMEOUT)
+    response.raise_for_status()
+    return response.content
 
-    with open(ZIPPED_BARS_FILE, 'wb') as zipped_json_bars_file:
-        zipped_json_bars_file.write(response.content)
-    with zipfile.ZipFile(ZIPPED_BARS_FILE) as zipped_json_bars_file:
-        with zipped_json_bars_file.open(
-                zipped_json_bars_file.namelist()[0]) as json_bars_file:
-                return json.loads(json_bars_file.read().decode('utf-8'))
+
+def get_json_bars_from(zipped_json_bars_data: bytes) -> list:
+    """
+    Возвращаем список баров, полученных из последовательности байт
+    :param zipped_json_bars_data: данные по барам в виде байтов
+    :return: список баров
+    """
+    with ZipFile(io.BytesIO(zipped_json_bars_data)) as zipped_json_bars_file:
+        json_bars_file_name = zipped_json_bars_file.namelist()[0]
+        return json.loads(zipped_json_bars_file.read(json_bars_file_name).
+                          decode('utf-8'))
 
 
 def print_bar_info(json_bar, latitude: float, longitude: float):
+    """
+    Печатаем информацию по конкретному бару
+    :param json_bar: данные по бару
+    :param latitude: широта пользователя (нужна для определения расстояния)
+    :param longitude: долгота пользователя (нужна для определения расстояния)
+    :return: None
+    """
     print('Название: ', json_bar['Cells']['Name'])
     print('Адрес: ', json_bar['Cells']['Address'])
     print('Телефон: ', json_bar['Cells']['PublicPhone'][0]['PublicPhone'])
@@ -54,13 +66,13 @@ def calc_distance_between_two_coordinates(llat1: float,
                                           llat2: float,
                                           llong2: float) -> int:
     """
-    Вычисляем дистанцию между 2 коорлинатами
+    Вычисляем дистанцию между 2 коорлинатами в метрах
     http://gis-lab.info/qa/great-circles.html
     :param llat1: широта первой координаты
     :param llong1: долгота первой координаты
     :param llat2: широта второй координаты
     :param llong2: долгота второй координаты
-    :return: расстояние между 2 координатами в метрах
+    :return: расстояние между двумя координатами в метрах
     """
 
     rad = 6372795  # радиус сферы (Земли)
@@ -92,6 +104,7 @@ def calc_distance_between_two_coordinates(llat1: float,
 
 def get_biggest_bar(json_bars: list):
     """
+    Получаем самый большой бар
     :param json_bars: список баров
     :return: бар с самым большим количество мест
     """
@@ -100,6 +113,7 @@ def get_biggest_bar(json_bars: list):
 
 def get_smallest_bar(json_bars: list):
     """
+    Получаем самый маленький бар
     :param json_bars: список баров
     :return: бар с самым маленьким количество мест
     """
@@ -108,6 +122,7 @@ def get_smallest_bar(json_bars: list):
 
 def get_closest_bar(json_bars: list, latitude: float, longitude: float):
     """
+    Получаем самый близкий к пользователю бар
     :param json_bars: список баров
     :param latitude: широта пользователя
     :param longitude: долгота пользователя
@@ -124,7 +139,7 @@ def get_closest_bar(json_bars: list, latitude: float, longitude: float):
     )
 
 
-def load_win_unicode_console():
+def enable_win_unicode_console():
     """
     Включаем правильное отображение unicode в консоли под MS Windows
     """
@@ -136,15 +151,27 @@ def load_win_unicode_console():
 if __name__ == '__main__':
 
     print('Загружаем информацию о барах...\n')
+
     try:
-        json_bars_list = load_zipped_json_bars_file_from_url(JSON_FILE_URL)
-    except OSError as error:
-        print('Ошибка: %s в файле: %s' % (error.strerror, error.filename))
+        zipped_json_bars = download_zipped_json_bars_from(JSON_FILE_URL)
+    except ConnectionError:
+        print('Ошибка сетевого соединения')
+        exit(1)
+    except HTTPError:
+        print('Сервер вернул неудачный код статуса ответа')
+        exit(1)
+    except Timeout:
+        print('Вышло время ожидания ответа от сервера')
+        exit(1)
+    except TooManyRedirects:
+        print('Слишком много редиректов')
         exit(1)
 
-    with suppress(OSError):
-        os.remove(ZIPPED_BARS_FILE)  # прибираем мусор
-
+    try:
+        json_bars = get_json_bars_from(zipped_json_bars)
+    except BadZipfile:
+        print('Ошибка: неверный zip-файл c данными по барам')
+        exit(1)
     try:
         user_latitude = float(
             input('Введите широту вашего местоположения: '))
@@ -154,13 +181,17 @@ if __name__ == '__main__':
         print('Данные должны быть числами, например: 35.7')
         exit(1)
 
-    smallest_bar = get_smallest_bar(json_bars_list)
-    biggest_bar = get_biggest_bar(json_bars_list)
-    closest_bar = get_closest_bar(json_bars_list,
+    if abs(user_latitude) > 90. or abs(user_longitude) > 90.:
+        print('Вы ввели неверные координаты')
+        exit(1)
+
+    smallest_bar = get_smallest_bar(json_bars)
+    biggest_bar = get_biggest_bar(json_bars)
+    closest_bar = get_closest_bar(json_bars,
                                   user_longitude,
                                   user_latitude)
 
-    load_win_unicode_console()
+    enable_win_unicode_console()
     print('\nБар с мин. кол-вом мест:')
     print_bar_info(smallest_bar, user_latitude, user_longitude)
     print('\nБар с макс. кол-вом мест:')
