@@ -6,11 +6,34 @@ import requests
 import sys
 from zipfile import ZipFile, BadZipfile
 from requests import ConnectionError, HTTPError, Timeout, TooManyRedirects
+from geopy import Nominatim
+from geopy.distance import vincenty
 
 JSON_FILE_URL = 'http://data.mos.ru/opendata/export/1796/json/2/1'
 REQUEST_TIMEOUT = 9  # ожидаем ответ сервера 9 секунд, для плохих соединений
 
 
+def handle_requests_library_errors(decorated):
+    def decorator(*args, **kwargs):
+        try:
+            return decorated(*args, **kwargs)
+        except ConnectionError:
+            print('Ошибка сетевого соединения')
+            exit(1)
+        except HTTPError:
+            print('Сервер вернул неудачный код статуса ответа')
+            exit(1)
+        except Timeout:
+            print('Вышло время ожидания ответа от сервера')
+            exit(1)
+        except TooManyRedirects:
+            print('Слишком много редиректов')
+            exit(1)
+
+    return decorator
+
+
+@handle_requests_library_errors
 def download_zipped_json_bars_from(url: str) -> bytes:
     """
     Загружаем данные по барам с сервера
@@ -48,58 +71,12 @@ def print_bar_info(json_bar, latitude: float, longitude: float):
     print('Количество мест: ', json_bar['Cells']['SeatsCount'])
     print('Широта: ', json_bar['Cells']['geoData']['coordinates'][1])
     print('Долгота: ', json_bar['Cells']['geoData']['coordinates'][0])
+
+    from_point = (latitude, longitude)
     # координаты перепутаны местами в самом файле
-    print(
-        'Расстояние, м: %i' % round(
-            calc_distance_between_two_coordinates(
-                latitude,
-                longitude,
-                float(json_bar['Cells']['geoData']['coordinates'][1]),
-                float(json_bar['Cells']['geoData']['coordinates'][0])
-            )
-        )
-    )
-
-
-def calc_distance_between_two_coordinates(llat1: float,
-                                          llong1: float,
-                                          llat2: float,
-                                          llong2: float) -> int:
-    """
-    Вычисляем дистанцию между 2 коорлинатами в метрах
-    http://gis-lab.info/qa/great-circles.html
-    :param llat1: широта первой координаты
-    :param llong1: долгота первой координаты
-    :param llat2: широта второй координаты
-    :param llong2: долгота второй координаты
-    :return: расстояние между двумя координатами в метрах
-    """
-
-    rad = 6372795  # радиус сферы (Земли)
-
-    # в радианах
-    lat1 = llat1 * math.pi / 180.
-    lat2 = llat2 * math.pi / 180.
-    long1 = llong1 * math.pi / 180.
-    long2 = llong2 * math.pi / 180.
-
-    # косинусы и синусы широт и разницы долгот
-    cl1 = math.cos(lat1)
-    cl2 = math.cos(lat2)
-    sl1 = math.sin(lat1)
-    sl2 = math.sin(lat2)
-    delta = long2 - long1
-    cdelta = math.cos(delta)
-    sdelta = math.sin(delta)
-
-    # вычисления длины большого круга
-    y = math.sqrt(math.pow(cl2 * sdelta, 2) +
-                  math.pow(cl1 * sl2 - sl1 * cl2 * cdelta, 2))
-    x = sl1 * sl2+cl1*cl2*cdelta
-    ad = math.atan2(y, x)
-    dist = ad * rad
-
-    return round(dist)
+    to_point = (float(json_bar['Cells']['geoData']['coordinates'][1]),
+                float(json_bar['Cells']['geoData']['coordinates'][0]))
+    print('Расстояние, км: %i' % vincenty(from_point, to_point).kilometers)
 
 
 def get_biggest_bar(json_bars: list):
@@ -130,12 +107,11 @@ def get_closest_bar(json_bars: list, latitude: float, longitude: float):
     """
     return min(
         json_bars,
-        key=lambda el: calc_distance_between_two_coordinates(
-            latitude,
-            longitude,
-            float(el['Cells']['geoData']['coordinates'][1]),
-            float(el['Cells']['geoData']['coordinates'][0])
-        )
+        key=lambda el: vincenty(
+            (latitude, longitude),
+            (float(el['Cells']['geoData']['coordinates'][1]),
+             float(el['Cells']['geoData']['coordinates'][0]))
+        ).meters
     )
 
 
@@ -152,26 +128,14 @@ if __name__ == '__main__':
 
     print('Загружаем информацию о барах...\n')
 
-    try:
-        zipped_json_bars = download_zipped_json_bars_from(JSON_FILE_URL)
-    except ConnectionError:
-        print('Ошибка сетевого соединения')
-        exit(1)
-    except HTTPError:
-        print('Сервер вернул неудачный код статуса ответа')
-        exit(1)
-    except Timeout:
-        print('Вышло время ожидания ответа от сервера')
-        exit(1)
-    except TooManyRedirects:
-        print('Слишком много редиректов')
-        exit(1)
+    zipped_json_bars = download_zipped_json_bars_from(JSON_FILE_URL)
 
     try:
         json_bars_data = get_json_bars_from(zipped_json_bars)
     except BadZipfile:
         print('Ошибка: неверный zip-файл c данными по барам')
         exit(1)
+
     try:
         user_latitude = float(
             input('Введите широту вашего местоположения: '))
@@ -192,6 +156,9 @@ if __name__ == '__main__':
                                   user_latitude)
 
     enable_win_unicode_console()
+    geolocator = Nominatim()
+    location = geolocator.reverse((user_latitude, user_longitude))
+    print('\nВы находитесь тут: %s' % location.address)
     print('\nБар с мин. кол-вом мест:')
     print_bar_info(smallest_bar, user_latitude, user_longitude)
     print('\nБар с макс. кол-вом мест:')

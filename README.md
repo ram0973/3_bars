@@ -46,6 +46,7 @@
 Python 3.5.2+
 Внешний модуль requests
 Внешний модуль win-unicode-console
+Внешний модуль geopy
 ```
 
 ## Установка
