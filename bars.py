@@ -24,7 +24,7 @@ def download_zipped_json_bars_from(url: str) -> bytes:
 
 def get_json_bars_from(zipped_json_bars_data: bytes) -> list:
     """
-    Возвращаем список баров, полученных из последовательности байт
+    Возвращаем список баров, полученных из последовательности байт с сервера
     :param zipped_json_bars_data: данные по барам в виде байтов
     :return: список баров
     """
