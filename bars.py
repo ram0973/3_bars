@@ -168,7 +168,7 @@ if __name__ == '__main__':
         exit(1)
 
     try:
-        json_bars = get_json_bars_from(zipped_json_bars)
+        json_bars_data = get_json_bars_from(zipped_json_bars)
     except BadZipfile:
         print('Ошибка: неверный zip-файл c данными по барам')
         exit(1)
@@ -185,9 +185,9 @@ if __name__ == '__main__':
         print('Вы ввели неверные координаты')
         exit(1)
 
-    smallest_bar = get_smallest_bar(json_bars)
-    biggest_bar = get_biggest_bar(json_bars)
-    closest_bar = get_closest_bar(json_bars,
+    smallest_bar = get_smallest_bar(json_bars_data)
+    biggest_bar = get_biggest_bar(json_bars_data)
+    closest_bar = get_closest_bar(json_bars_data,
                                   user_longitude,
                                   user_latitude)
 
