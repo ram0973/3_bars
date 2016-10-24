@@ -66,7 +66,6 @@ cd 3_bars
 pip3 install -r requirements.txt
 ```
     
-    
 ## Описание работы
 Пользователь вводит свои координаты с клавиатуры. Скрипт загружает 
 данные с сервера, распаковывает данные из zip-архива и выводит
@@ -90,13 +89,6 @@ Linux
  
 python3 bars.py 
 
-## Тесты
-
-```
-Windows: python tests.py
-Linux: python3 tests.py
-```
-    
 ## Лицензия
 
 [MIT](http://opensource.org/licenses/MIT)
