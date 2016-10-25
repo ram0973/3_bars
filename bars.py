@@ -9,7 +9,7 @@ from geopy import Nominatim
 from geopy.distance import vincenty
 
 JSON_FILE_URL = 'http://data.mos.ru/opendata/export/1796/json/2/1'
-REQUEST_TIMEOUT = 9  # ожидаем ответ сервера 9 секунд, для плохих соединений
+REQUEST_TIMEOUT = 6  # ожидаем ответ сервера 6 секунд, для плохих соединений
 
 
 def handle_requests_library_errors(decorated):
@@ -46,7 +46,7 @@ def download_zipped_json_bars_from(url: str) -> bytes:
 
 def unpack_json_bars_from(zipped_json_bars_data: bytes) -> list:
     """
-    Возвращаем список баров, полученных из последовательности байт с сервера
+    Возвращаем список баров, полученных как последовательность байт с сервера
     :param zipped_json_bars_data: данные по барам в виде байтов
     :return: список баров
     """
@@ -62,7 +62,6 @@ def print_bar_info(json_bar, latitude: float, longitude: float):
     :param json_bar: данные по бару
     :param latitude: широта пользователя (нужна для определения расстояния)
     :param longitude: долгота пользователя (нужна для определения расстояния)
-    :return: None
     """
     print('Название: ', json_bar['Cells']['Name'])
     print('Адрес: ', json_bar['Cells']['Address'])
@@ -78,7 +77,7 @@ def print_bar_info(json_bar, latitude: float, longitude: float):
     print('Расстояние, км: %i' % vincenty(from_point, to_point).kilometers)
 
 
-def get_biggest_bar(json_bars: list):
+def get_biggest_bar(json_bars: list) -> dict:
     """
     Получаем самый большой бар
     :param json_bars: список баров
@@ -87,7 +86,7 @@ def get_biggest_bar(json_bars: list):
     return max(json_bars, key=lambda el: el['Cells']['SeatsCount'])
 
 
-def get_smallest_bar(json_bars: list):
+def get_smallest_bar(json_bars: list) -> dict:
     """
     Получаем самый маленький бар
     :param json_bars: список баров
@@ -96,13 +95,14 @@ def get_smallest_bar(json_bars: list):
     return min(json_bars, key=lambda el: el['Cells']['SeatsCount'])
 
 
-def get_closest_bar(json_bars: list, latitude: float, longitude: float):
+def get_closest_bar(json_bars: list, latitude: float, longitude: float) \
+        -> dict:
     """
     Получаем самый близкий к пользователю бар
     :param json_bars: список баров
     :param latitude: широта пользователя
     :param longitude: долгота пользователя
-    :return:
+    :return: самый близкий бар
     """
     return min(
         json_bars,
