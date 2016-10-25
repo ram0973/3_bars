@@ -8,7 +8,7 @@ from requests import ConnectionError, HTTPError, Timeout, TooManyRedirects
 from geopy import Nominatim
 from geopy.distance import vincenty
 
-JSON_FILE_URL = 'http://data.mos.ru/opendata/export/1796/json/2/1'
+ZIPPED_JSON_FILE_URL = 'http://data.mos.ru/opendata/export/1796/json/2/1'
 REQUEST_TIMEOUT = 6  # ожидаем ответ сервера 6 секунд, для плохих соединений
 
 
@@ -127,7 +127,7 @@ if __name__ == '__main__':
 
     print('Загружаем информацию о барах...\n')
 
-    zipped_json_bars = download_zipped_json_bars_from(JSON_FILE_URL)
+    zipped_json_bars = download_zipped_json_bars_from(ZIPPED_JSON_FILE_URL)
 
     try:
         json_bars_data = unpack_json_bars_from(zipped_json_bars)
