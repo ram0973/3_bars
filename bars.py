@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import json
-import math
 import io
 import requests
 import sys
