@@ -45,7 +45,7 @@ def download_zipped_json_bars_from(url: str) -> bytes:
     return response.content
 
 
-def get_json_bars_from(zipped_json_bars_data: bytes) -> list:
+def unpack_json_bars_from(zipped_json_bars_data: bytes) -> list:
     """
     Возвращаем список баров, полученных из последовательности байт с сервера
     :param zipped_json_bars_data: данные по барам в виде байтов
@@ -131,7 +131,7 @@ if __name__ == '__main__':
     zipped_json_bars = download_zipped_json_bars_from(JSON_FILE_URL)
 
     try:
-        json_bars_data = get_json_bars_from(zipped_json_bars)
+        json_bars_data = unpack_json_bars_from(zipped_json_bars)
     except BadZipfile:
         print('Ошибка: неверный zip-файл c данными по барам')
         exit(1)
@@ -156,7 +156,7 @@ if __name__ == '__main__':
                                   user_latitude)
 
     enable_win_unicode_console()
-    geolocator = Nominatim()
+    geolocator = Nominatim()  # http://wiki.openstreetmap.org/wiki/Nominatim
     location = geolocator.reverse((user_latitude, user_longitude))
     print('\nВы находитесь тут: %s' % location.address)
     print('\nБар с мин. кол-вом мест:')
