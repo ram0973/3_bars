@@ -12,6 +12,11 @@ REQUEST_TIMEOUT = 6  # ожидаем ответ сервера 6 секунд, 
 
 
 def handle_requests_library_errors(decorated):
+    """
+    Декоратор, обрабатывающий ошибки в requests
+    :param decorated: Функция, в которой надо отловить requests exceptions
+    :return: декоратор
+    """
     def decorator(*args, **kwargs):
         try:
             return decorated(*args, **kwargs)
