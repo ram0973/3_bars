@@ -4,7 +4,6 @@ import io
 import requests
 import sys
 from zipfile import ZipFile, BadZipfile
-from requests import ConnectionError, HTTPError, Timeout, TooManyRedirects
 from geopy import Nominatim
 from geopy.distance import vincenty
 
@@ -16,16 +15,17 @@ def handle_requests_library_errors(decorated):
     def decorator(*args, **kwargs):
         try:
             return decorated(*args, **kwargs)
-        except ConnectionError:
+        except requests.ConnectionError:
             print('Ошибка сетевого соединения')
             exit(1)
-        except HTTPError:
-            print('Сервер вернул неудачный код статуса ответа')
+        except requests.HTTPError as e:
+            print('Сервер вернул неудачный код статуса ответа: %s %i' %
+                  (e.response.reason, e.response.status_code))
             exit(1)
-        except Timeout:
+        except requests.Timeout:
             print('Вышло время ожидания ответа от сервера')
             exit(1)
-        except TooManyRedirects:
+        except requests.TooManyRedirects:
             print('Слишком много редиректов')
             exit(1)
 
